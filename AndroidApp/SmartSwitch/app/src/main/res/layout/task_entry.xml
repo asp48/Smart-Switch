@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="600px"
+    android:layout_height="500px">
+<android.support.v7.widget.AppCompatSpinner
+    android:layout_marginTop="50px"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/switch_list">
+</android.support.v7.widget.AppCompatSpinner>
+    <EditText
+        android:layout_marginTop="20px"
+        android:layout_width="match_parent"
+        android:layout_height="80px"
+        android:focusable="false"
+        android:id="@+id/startTime"
+        android:hint="Start Time"/>
+    <EditText
+        android:layout_marginTop="20px"
+        android:layout_width="match_parent"
+        android:layout_height="80px"
+        android:focusable="false"
+        android:id="@+id/endTime"
+        android:hint="End Time"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="30px"
+        android:layout_height="80px">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:background="@drawable/button1"
+            android:id="@+id/submit"
+            android:text="Submit"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:background="@drawable/button2"
+            android:id="@+id/cancel"
+            android:text="Cancel"/>
+    </LinearLayout>
+</LinearLayout>

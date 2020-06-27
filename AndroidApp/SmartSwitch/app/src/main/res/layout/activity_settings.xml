@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.asureshprabhu.smartswitch.settings">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_margin="30px"
+            android:background="@android:color/white"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.1"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:src="@drawable/user"
+                android:layout_weight="0.2"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_weight="0.8">
+                <TextView
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black"
+                    android:paddingLeft="30px"
+                    android:textSize="40px"
+                    android:id="@+id/uname"
+                    android:gravity="center_vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"/>
+                <TextView
+                    android:gravity="center_vertical"
+                    android:textColor="@android:color/black"
+                    android:textSize="35px"
+                    android:id="@+id/switch_access"
+                    android:paddingLeft="30px"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"/>
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_weight="0.9">
+            <EditText
+                android:hint="Current Password"
+                android:layout_marginTop="50px"
+                android:layout_marginLeft="30px"
+                android:layout_marginRight="30px"
+                android:visibility="gone"
+                android:inputType="textPassword"
+                android:id="@+id/cur_pswd"
+                android:layout_width="match_parent"
+                android:layout_height="100px" />
+            <EditText
+                android:hint="New Password"
+                android:visibility="gone"
+                android:inputType="textPassword"
+                android:layout_marginTop="40px"
+                android:layout_marginLeft="30px"
+                android:layout_marginRight="30px"
+                android:id="@+id/new_pswd"
+                android:layout_width="match_parent"
+                android:layout_height="100px" />
+            <EditText
+                android:inputType="textPassword"
+                android:hint="Confirm Password"
+                android:layout_marginTop="40px"
+                android:layout_marginLeft="30px"
+                android:layout_marginRight="30px"
+                android:visibility="gone"
+                android:id="@+id/cnf_pswd"
+                android:layout_width="match_parent"
+                android:layout_height="100px" />
+            <Button
+                android:text="SUBMIT"
+                android:layout_marginTop="40px"
+                android:background="@drawable/button1"
+                android:layout_gravity="center|center_horizontal"
+                android:layout_width="400px"
+                android:visibility="gone"
+                android:id="@+id/submit_pswd"
+                android:layout_height="100px" />
+            <Button
+                android:text="Change Password"
+                android:layout_marginTop="40px"
+                android:background="@drawable/button1"
+                android:layout_gravity="center|center_horizontal"
+                android:layout_width="400px"
+                android:id="@+id/ch_pswd"
+                android:layout_height="100px" />
+        </LinearLayout>
+    </LinearLayout>
+</android.support.constraint.ConstraintLayout>

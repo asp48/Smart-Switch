@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="150px"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:paddingLeft="10px"
+            android:textSize="35px"
+            android:textColor="@android:color/black"
+            android:id="@+id/deviceName"
+            android:layout_weight="0.5"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:gravity="center_vertical"
+            android:paddingLeft="10px"
+            android:textSize="28px"
+            android:textColor="@android:color/black"
+            android:layout_height="match_parent"
+            android:id="@+id/uname"
+            android:textStyle="italic"
+            android:layout_weight="0.5"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.5">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/startTime"
+            android:textColor="@android:color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10px"
+            android:textSize="26px"
+            android:layout_weight="0.5"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/endTime"
+            android:textColor="@android:color/black"
+            android:gravity="center_vertical"
+            android:paddingLeft="10px"
+            android:textSize="26px"
+            android:layout_weight="0.5"/>
+    </LinearLayout>
+</LinearLayout>
+</LinearLayout>

@@ -1,0 +1,349 @@
+ 
+//tested for switch 1 0011ontimeofftime
+/*
+ * accept 12 char string as
+ *"taskid(3),switch(1),ontime(4),offtime(4)"
+ * with no space or any characters in between
+ * default "nnnnnnnnnnnn"
+ */
+
+
+
+//libraries for connecting to WiFi and MQTT Server
+#include <ESP8266WiFi.h>
+#include "Adafruit_MQTT.h"
+#include "Adafruit_MQTT_Client.h"
+
+#define TASKS 1       //number of tasks 
+
+//libraries for Connecting to NTP Server to access time 
+#include <WiFiUdp.h>
+#include<Time.h>
+
+
+//function to request NTP 
+unsigned long sendNTPpacket(IPAddress& address);
+
+
+//compare the input time data with current time 
+void compareTask(String task_str);
+//set a new task
+void setTask(String settask_str);
+//update the status in the time_data_string after an event of a particular switch is finished 
+void reinsert_n();
+//variables used to insert 'n's after switch off cycle
+void setSwitch(String subStr);
+    
+
+//NTP Server data 
+const char* ntpServerName = "time.nist.gov";
+unsigned int localPort = 2390;
+IPAddress timeServerIP;
+const int NTP_PACKET_SIZE = 48;
+byte packetBuffer[ NTP_PACKET_SIZE];
+WiFiUDP udp;
+
+
+//Arduino pin mappings 
+#define SW1 16
+#define SW2 5
+#define SW3 4
+#define SW4 0
+
+
+//global variables to hold time details 
+int hr,mn,sc=0;
+String pres_time,cmp_time;
+
+
+//time_data_string which contains on_time off_time of all the switches
+String tasks[TASKS];
+int TID=0;
+/************************* WiFi Access Point *********************************/
+
+#define WLAN_SSID       ""
+#define WLAN_PASS       ""
+
+/************************* cloudMQTT Setup *********************************/
+
+#define SERVER      ""
+#define SERVERPORT                   
+#define USERNAME    ""
+#define KEY         ""
+
+
+//ESP8266 WiFiClient class to connect to the MQTT server.
+WiFiClient client;
+
+
+// Setup the MQTT client class by passing in the WiFi client and MQTT server and login details.
+Adafruit_MQTT_Client mqtt(&client, SERVER, SERVERPORT, USERNAME, KEY);
+
+//subscriber
+Adafruit_MQTT_Subscribe sub = Adafruit_MQTT_Subscribe(&mqtt, "topic/hello");
+
+void MQTT_connect();
+
+void setup() {
+
+  //initialize tasks on startup
+  int i;
+  for(i=0;i<TASKS;i++)
+  {
+    tasks[i]="nnnnnnnnnnnn";
+  }
+
+  //set the required pis of nodemcu as output and pullup
+  pinMode(SW1,OUTPUT);
+  pinMode(SW2,OUTPUT);
+  pinMode(SW3,OUTPUT);
+  pinMode(SW4,OUTPUT);
+  
+  digitalWrite(SW1,HIGH);
+  digitalWrite(SW2,HIGH);
+  digitalWrite(SW3,HIGH);
+  digitalWrite(SW4,HIGH);
+
+  //begin serial monitor 
+  Serial.begin(115200);
+  delay(10);
+
+  // Connect to WiFi access point.
+  Serial.println(); 
+  Serial.print("Connecting to ");
+  Serial.println(WLAN_SSID);
+  WiFi.begin(WLAN_SSID, WLAN_PASS);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println();
+
+  Serial.println("WiFi connected");
+  Serial.println("IP address: "); Serial.println(WiFi.localIP());
+
+  // Setup MQTT subscription for the required topic 
+  mqtt.subscribe(&sub);
+
+  //udp for ntp 
+  udp.begin(localPort);
+}
+
+
+void loop() {
+  // Ensure the connection to the MQTT server is alive (this will make the first
+  // connection and automatically reconnect when disconnected).  
+  MQTT_connect();
+
+  //wait for incoming subscriptions subloop
+  Adafruit_MQTT_Subscribe *subscription;
+
+  //subscription block
+  while ((subscription = mqtt.readSubscription(5000))) {    //5000
+    
+    if (subscription == &sub) {
+      String subStr=(char*)sub.lastread;
+      
+      Serial.println(subStr);       //SUBSCRIBED STRING
+      Serial.println(subStr.length());
+
+      if(subStr.length()==12)
+        setTask(subStr);            //function to set the on-time and off-time 
+      else if(subStr.length()==2)
+        setSwitch(subStr);          //function to set the switch on/off
+    }
+    
+  }
+
+  
+ 
+  WiFi.hostByName(ntpServerName, timeServerIP); 
+
+  sendNTPpacket(timeServerIP);
+  delay(100);  //1000
+  
+  int cb = udp.parsePacket();
+  if (!cb) {
+    delay(1);
+  }
+  else {
+    udp.read(packetBuffer, NTP_PACKET_SIZE); // read the packet into the buffer
+    unsigned long highWord = word(packetBuffer[40], packetBuffer[41]);
+    unsigned long lowWord = word(packetBuffer[42], packetBuffer[43]);
+    unsigned long secsSince1900 = highWord << 16 | lowWord;
+    const unsigned long seventyYears = 2208988800UL;
+    unsigned long epoch = secsSince1900 - seventyYears;
+    //Serial.print("UNX");
+    //Serial.println(epoch);
+
+
+  epoch=epoch+5*60*60+30*60;  //Indian time conversion
+  hr=(epoch  % 86400L) / 3600;
+  mn=(epoch  % 3600) / 60;
+  sc=epoch % 60;
+
+  //modify and format the string for comparision
+  pres_time="";
+  if(hr<10)
+    pres_time=pres_time+"0";
+  pres_time=pres_time+String(hr);
+  if(mn<10)
+    pres_time=pres_time+"0";
+  pres_time=pres_time+String(mn);
+  
+  Serial.println(pres_time);       //PRINT THE PRESENT TIME
+
+  int k;
+  for(k=0;k<TASKS;k++)
+  { 
+      compareTask(tasks[k]);
+      Serial.println(tasks[k]);
+  }
+   
+}
+}
+
+//function to send NTP request packet
+unsigned long sendNTPpacket(IPAddress& address)
+{
+  //Serial.println("sending NTP packet...");
+  memset(packetBuffer, 0, NTP_PACKET_SIZE);
+  packetBuffer[0] = 0b11100011;   // LI, Version, Mode
+  packetBuffer[1] = 0;     // Stratum, or type of clock
+  packetBuffer[2] = 6;     // Polling Interval
+  packetBuffer[3] = 0xEC;  // Peer Clock Precision
+  packetBuffer[12]  = 49;
+  packetBuffer[13]  = 0x4E;
+  packetBuffer[14]  = 49;
+  packetBuffer[15]  = 52;
+  udp.beginPacket(address, 123);
+  udp.write(packetBuffer, NTP_PACKET_SIZE);
+  udp.endPacket();
+}
+// Function to connect and reconnect as necessary to the MQTT server.
+// Should be called in the loop function and it will take care if connecting.
+void MQTT_connect() {
+  int8_t ret;
+
+  // Stop if already connected.
+  if (mqtt.connected()) {
+    return;
+  }
+
+  Serial.print("Connecting to MQTT... ");
+
+  uint8_t retries = 3;
+  while ((ret = mqtt.connect()) != 0) { // connect will return 0 for connected
+       Serial.println(mqtt.connectErrorString(ret));
+       Serial.println("Retrying MQTT connection in 5 seconds...");
+       mqtt.disconnect();
+       delay(5000);  // wait 5 seconds
+       retries--;
+       if (retries == 0) {
+         // basically die and wait for WDT to reset me
+         while (1);
+       }
+  }
+  Serial.println("MQTT Connected!");
+}
+
+
+void compareTask(String task_str)
+{
+
+  //Serial.println(task_str);   //DISPLAY EVERY TASK 
+ int sw=String(task_str[3]).toInt();
+ String onTime=task_str.substring(4,8);
+ String offTime=task_str.substring(8,12);
+
+ String id_str =task_str.substring(1,3);
+ int id=id_str.toInt();
+
+ Serial.println("data");
+ Serial.println(id);
+ Serial.println(sw);
+ Serial.println(onTime);
+ Serial.println(offTime);
+ 
+
+ if(onTime==pres_time)
+ {
+    if(sw==1)
+      digitalWrite(SW1,LOW);
+    else if(sw==2)
+      digitalWrite(SW2,LOW);
+    else if(sw==3)
+      digitalWrite(SW3,LOW);
+    else if(sw==4)
+      digitalWrite(SW4,LOW);
+ }
+
+ if(offTime==pres_time)
+ {
+    if(sw==1)
+    {
+      digitalWrite(SW1,HIGH);
+      tasks[id]="nnnnnnnnnnnn";
+    }
+    else if(sw==2)
+    {
+      digitalWrite(SW2,HIGH);
+      tasks[id]="nnnnnnnnnnnn";
+    }
+    else if(sw==3)
+    {
+      digitalWrite(SW3,HIGH);
+      tasks[id]="nnnnnnnnnnnn";
+    }
+    else if(sw==4)
+    {
+      digitalWrite(SW4,HIGH);
+      tasks[id]="nnnnnnnnnnnn";
+    }          
+ }
+}
+
+
+void setTask(String settask_str)
+{
+    String id_str =settask_str.substring(0,2);
+    int id=id_str.toInt();
+    String task_str=settask_str.substring(3,11);
+    tasks[id]=settask_str;
+}
+
+
+
+
+void setSwitch(String subStr)
+{
+  if(subStr[0]=='1')
+  {
+    if(subStr[1]=='0')
+      digitalWrite(SW1,HIGH);
+    else
+      digitalWrite(SW1,LOW);
+  }
+  else if(subStr[0]=='2')
+  {
+    if(subStr[1]=='0')
+      digitalWrite(SW2,HIGH);
+    else
+      digitalWrite(SW2,LOW);
+  }
+  if(subStr[0]=='3')
+  {
+    if(subStr[1]=='0')
+      digitalWrite(SW3,HIGH);
+    else
+      digitalWrite(SW3,LOW);
+  }
+  if(subStr[0]=='4')
+  {
+    if(subStr[1]=='0')
+      digitalWrite(SW4,HIGH);
+    else
+      digitalWrite(SW4,LOW);
+  }
+}
+

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.asureshprabhu.smartswitch.dashboard">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_weight="0.5">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="switch \non/off"
+            android:id="@+id/switch_on_off"
+            android:background="@android:color/holo_blue_light"
+            android:layout_marginTop="30px"
+            android:layout_marginLeft="30px"
+            android:layout_marginRight="30px"
+            android:layout_marginBottom="30px"
+            android:padding="60px"
+            android:drawablePadding="5px"
+            android:textSize="25px"
+            android:drawableTop="@drawable/switch_onoff"
+            android:onClick="open_switch_on_off"
+            android:layout_weight="0.5"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="timer"
+            android:padding="60px"
+            android:layout_marginTop="30px"
+            android:layout_marginRight="30px"
+            android:layout_marginBottom="30px"
+            android:textSize="25px"
+            android:background="@android:color/holo_blue_light"
+            android:drawableTop="@drawable/timer"
+            android:onClick="open_timer"
+            android:drawablePadding="5px"
+            android:id="@+id/timer"
+            android:layout_weight="0.5"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_weight="0.5">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="All\nTasks"
+            android:drawablePadding="5px"
+            android:padding="60px"
+            android:textSize="25px"
+            android:layout_marginLeft="30px"
+            android:layout_marginBottom="30px"
+            android:layout_marginRight="30px"
+            android:background="@android:color/holo_blue_light"
+            android:drawableTop="@drawable/tasklist"
+            android:id="@+id/all_tasks"
+            android:onClick="open_all_tasks"
+            android:layout_weight="0.5"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Setting"
+            android:padding="60px"
+            android:layout_marginRight="30px"
+            android:layout_marginBottom="30px"
+            android:drawablePadding="5px"
+            android:textSize="25px"
+            android:background="@android:color/holo_blue_light"
+            android:drawableTop="@drawable/settings"
+            android:onClick="open_settings"
+            android:id="@+id/settings"
+            android:layout_weight="0.5"/>
+    </LinearLayout>
+
+
+</LinearLayout>
+</android.support.constraint.ConstraintLayout>

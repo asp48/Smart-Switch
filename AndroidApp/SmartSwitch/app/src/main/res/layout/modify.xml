@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="600px"
+    android:layout_height="400px">
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Start time"
+        android:focusable="false"
+        android:layout_marginTop="40px"
+        android:id="@+id/s_time"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="End time"
+        android:focusable="false"
+        android:layout_marginTop="30px"
+        android:id="@+id/e_time"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="submit"
+        android:layout_marginTop="30px"
+        android:background="@drawable/button1"
+        android:id="@+id/m_submit"/>
+
+</LinearLayout>
