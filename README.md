@@ -1,7 +1,7 @@
 # Smart-Switch
 An android application to control switch board. 
 
-# Demo  
+## Demo  
 
 ### Switch On Off  
 
